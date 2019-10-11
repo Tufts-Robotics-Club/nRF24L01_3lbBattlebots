@@ -24,17 +24,13 @@
 // Define addresses for radio channels
 #define CLIENT_ADDRESS 1   
 #define SERVER_ADDRESS 2
-#define CLIENT_ADDRESS1 3   
-#define SERVER_ADDRESS1 4
 
  
 // Create an instance of the radio driver
 RH_NRF24 RadioDriver;
-RH_NRF24 RadioDriver1;
  
 // Sets the radio driver to NRF24 and the server address to 2
 RHReliableDatagram RadioManager(RadioDriver, SERVER_ADDRESS);
-RHReliableDatagram RadioManager1(RadioDriver1, SERVER_ADDRESS1);
  
 // Define a message to return if values received
 uint8_t ReturnMessage[] = "JoyStick Data Received"; 
@@ -80,28 +76,5 @@ void loop()
         Serial.println("sendtoWait failed");
     }
   }
-
-  if (RadioManager1.available())
-  {
- // Wait for a message addressed to us from the client
-    uint8_t len = sizeof(buf);
-    uint8_t from;
-    if (RadioManager1.recvfromAck(buf, &len, &from))
- //Serial Print the values of joystick
-    {
-      x1 = buf[0];
-      y1 = buf[1];
-      Serial.print("got request from : 0x");
-      Serial.print(from, HEX);
-      Serial.print(": X = ");
-      Serial.print(buf[0]);
-      Serial.print(" Y = ");
-      Serial.println(buf[1]);
- 
-      // Send a reply back to the originator client, check for error
-      if (!RadioManager1.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
-        Serial.println("sendtoWait failed");
-    }
-  }
-  delay(10);
+  delay(50);
 }
