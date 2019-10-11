@@ -1,4 +1,3 @@
-//#include <AFMotor.h>
 
 /*
   nRF24L01+ Joystick Receiver Demo
@@ -43,14 +42,7 @@ uint8_t ReturnMessage[] = "JoyStick Data Received";
 // Define the Message Buffer
 uint8_t buf[RH_NRF24_MAX_MESSAGE_LEN];
 
-//DC Motors:
-//extern HardwareSerial Serial;
-//
-//int BIN_1 = 3;
-//int BIN_2 = 5;
-//int AIN_1 = 6;
-//int AIN_2 = 9;
-//int MAX_PWM_VOLTAGE = 240;
+
  
 void setup()
 {
@@ -61,12 +53,6 @@ void setup()
   if (!RadioManager.init()){
     Serial.println("init failed");
   }
-
-  //DC Motors:
-  //pinMode(BIN_1, OUTPUT);
-  //pinMode(BIN_2, OUTPUT);
-  //pinMode(AIN_1, OUTPUT);
-  //pinMode(AIN_2, OUTPUT);
 } 
  
 void loop()
@@ -92,7 +78,30 @@ void loop()
       // Send a reply back to the originator client, check for error
       if (!RadioManager.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
         Serial.println("sendtoWait failed");
-      }
     }
-    delay(10);
   }
+
+  if (RadioManager1.available())
+  {
+ // Wait for a message addressed to us from the client
+    uint8_t len = sizeof(buf);
+    uint8_t from;
+    if (RadioManager1.recvfromAck(buf, &len, &from))
+ //Serial Print the values of joystick
+    {
+      x1 = buf[0];
+      y1 = buf[1];
+      Serial.print("got request from : 0x");
+      Serial.print(from, HEX);
+      Serial.print(": X = ");
+      Serial.print(buf[0]);
+      Serial.print(" Y = ");
+      Serial.println(buf[1]);
+ 
+      // Send a reply back to the originator client, check for error
+      if (!RadioManager1.sendtoWait(ReturnMessage, sizeof(ReturnMessage), from))
+        Serial.println("sendtoWait failed");
+    }
+  }
+  delay(10);
+}
